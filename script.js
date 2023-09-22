@@ -83,7 +83,7 @@ form.addEventListener('submit', function (e) {
     emailInput.value = '';
 });
 
-// Replace this with your actual data
+// Replace this with your actual Data
 const userData = {
     
   };
@@ -91,7 +91,7 @@ const userData = {
   // Axios POST Request with data and corrected URL
   axios.post("https://crudcrud.com/api/4b3fab6b45c54841bda7ba26659891e5/users", userData)
     .then((response) => {
-        
+
       console.log(response.data);
     })
     .catch((err) => {
