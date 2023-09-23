@@ -3,14 +3,13 @@ const emailInput = document.getElementById('email');
 const form = document.getElementById('my-form');
 const usersList = document.getElementById('users');
 
-// Load existing users from local storage
-const savedUsers = JSON.parse(localStorage.getItem('users')) || [];
+let savedUsers = []; 
 
 let editIndex = -1;
 
 // Function to display existing users
 function displayUsers() {
-    usersList.innerHTML = ""; // Clear the list before re-adding
+    usersList.innerHTML = ""; 
     savedUsers.forEach((user, index) => {
         const li = document.createElement('li');
 
@@ -48,8 +47,6 @@ function editUser(index) {
 // Function to delete a user
 function deleteUser(index) {
     savedUsers.splice(index, 1);
-    localStorage.setItem('users', JSON.stringify(savedUsers));
-    editIndex = -1;
     displayUsers();
     nameInput.value = '';
     emailInput.value = '';
@@ -58,43 +55,44 @@ function deleteUser(index) {
 // Display existing users on page load
 displayUsers();
 
-// Add event listener
+//  GET request to fetch user data from the CRUD API
+axios.get("https://crudcrud.com/api/2d96262635804c53a6eb922753f92a9b/users")
+    .then((response) => {
+        savedUsers = response.data; // Update savedUsers with data from the API
+        displayUsers(); // Display t
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+
+// Add event listener for form submission
 form.addEventListener('submit', function (e) {
     e.preventDefault();
+    
+    const userData = {
+        name: nameInput.value,
+        email: emailInput.value
+    };
 
-    const name = nameInput.value;
-    const email = emailInput.value;
-
-    if (editIndex !== -1) {
-        // Editing an existing user
-        savedUsers[editIndex].name = name;
-        savedUsers[editIndex].email = email;
-        editIndex = -1;
+    if (editIndex === -1) {
+        
+        savedUsers.push(userData);
     } else {
-        // Adding a new user
-        const user = { name, email };
-        savedUsers.push(user);
+        
+        savedUsers[editIndex] = userData;
     }
 
-    localStorage.setItem('users', JSON.stringify(savedUsers));
-    displayUsers();
+    // POST request to save user data to the CRUD API
+    axios.post("https://crudcrud.com/api/2d96262635804c53a6eb922753f92a9b/users", userData)
+        .then((response) => {
+            console.log(response.data);
+            displayUsers(); // Update the display
+        })
+        .catch((err) => {
+            console.error(err);
+        });
 
     nameInput.value = '';
     emailInput.value = '';
+    editIndex = -1;
 });
-
-// Replace this with your actual Data
-const userData = {
-    
-  };
-  
-  // Axios POST Request with data and corrected URL
-  axios.post("https://crudcrud.com/api/4b3fab6b45c54841bda7ba26659891e5/users", userData)
-    .then((response) => {
-
-      console.log(response.data);
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-  
