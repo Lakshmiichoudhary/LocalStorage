@@ -20,10 +20,15 @@ function displayUsers() {
         emailSpan.textContent = ` - ${user.email}`;
         li.appendChild(emailSpan);
 
-        const deleteButton = document.createElement('button'); 
-        deleteButton.textContent = "Delete"; 
+        const editButton = document.createElement('button');
+        editButton.textContent = "Edit";
+        editButton.addEventListener('click', () => editUser(index)); 
+        li.appendChild(editButton);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = "Delete";
         deleteButton.addEventListener('click', () => deleteUser(index, user._id)); 
-        li.appendChild(deleteButton); 
+        li.appendChild(deleteButton);
 
         usersList.appendChild(li);
     });
@@ -31,9 +36,17 @@ function displayUsers() {
 
 function editUser(index) {
     const user = savedUsers[index];
-    nameInput.value = user.name;
-    emailInput.value = user.email;
-    editIndex = index;
+    axios
+        .get(`https://crudcrud.com/api/2d96262635804c53a6eb922753f92a9b/users/${user._id}`)
+        .then((response) => {
+            const userData = response.data;
+            nameInput.value = userData.name;
+            emailInput.value = userData.email;
+            index = index; 
+        })
+        .catch((err) => {
+            console.error(err);
+        });
 }
 
 function deleteUser(index, userId) {
@@ -47,8 +60,6 @@ function deleteUser(index, userId) {
             console.error(err);
         });
 }
-
-displayUsers();
 
 axios.get("https://crudcrud.com/api/2d96262635804c53a6eb922753f92a9b/users")
     .then((response) => {
@@ -86,3 +97,6 @@ form.addEventListener('submit', function (e) {
     emailInput.value = '';
     editIndex = -1;
 });
+
+// Initial display of users
+displayUsers();
